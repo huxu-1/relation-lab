@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { AssessmentResult } from '@/lib/types';
 import Link from 'next/link';
+import FeedbackForm from '@/components/FeedbackForm';
 
 function verifyUnlockCode(resultKey: string, unlockCode: string): boolean {
   // Client-side verification - mirrors server-side logic
@@ -32,12 +33,16 @@ export default function ResultPage() {
   useEffect(() => {
     const key = searchParams.get('key');
     const unlock = searchParams.get('unlock');
+    const preview = searchParams.get('preview');
     if (!key) { setError(true); return; }
     try {
       const data = localStorage.getItem(key);
       if (!data) { setError(true); return; }
       setResult(JSON.parse(data));
-      if (unlock && verifyUnlockCode(key, unlock)) {
+      // Owner preview mode - temporarily unlock for viewing
+      if (preview === 'owner2026') {
+        setIsUnlocked(true);
+      } else if (unlock && verifyUnlockCode(key, unlock)) {
         setIsUnlocked(true);
       }
     } catch { setError(true); }
@@ -56,8 +61,19 @@ export default function ResultPage() {
 
   const maxScore = Math.max(...result.freeResult.dimensionBreakdown.map(d => d.score));
 
+  const isPreview = searchParams.get('preview') === 'owner2026';
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
+      {/* Owner Preview Banner */}
+      {isPreview && (
+        <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-3 mb-6 text-center">
+          <p className="text-sm text-yellow-800 font-medium">
+            🔧 预览模式 - 你正在查看完整付费报告，普通用户需付费后才能看到
+          </p>
+        </div>
+      )}
+
       {/* Result Header */}
       <div className="text-center mb-8">
         <p className="text-sm text-text-muted mb-2">你的测评结果</p>
@@ -155,6 +171,9 @@ export default function ResultPage() {
           </div>
         </div>
       )}
+
+      {/* Feedback Section */}
+      <FeedbackForm assessmentId={result.assessmentId} />
     </div>
   );
 }
