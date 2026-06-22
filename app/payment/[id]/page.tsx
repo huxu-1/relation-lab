@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
+// 支付宝收款链接 - 手机点击直接跳转
+const ALIPAY_URL = 'https://qr.alipay.com/paipai/personal.htm';
+
 export default function PaymentPage() {
   const searchParams = useSearchParams();
   const resultKey = searchParams.get('key') || '';
@@ -17,6 +20,24 @@ export default function PaymentPage() {
     const mobile = /android|iphone|ipad|ipod|mobile|phone/.test(ua);
     setIsMobile(mobile);
   }, []);
+
+  // 手机端点击跳转支付宝
+  const handleAlipayClick = () => {
+    const alipayAppUrl = `alipays://platformapi/startapp?saId=10000007&qrcode=${encodeURIComponent(ALIPAY_URL)}`;
+    const startTime = Date.now();
+
+    // 尝试打开支付宝App
+    window.location.href = alipayAppUrl;
+
+    // 2秒后检测是否还在当前页面（App未安装）
+    setTimeout(() => {
+      const elapsed = Date.now() - startTime;
+      if (elapsed < 3000) {
+        // App未安装，跳转网页版收银台
+        window.location.href = ALIPAY_URL;
+      }
+    }, 2000);
+  };
 
   const handleConfirm = async () => {
     if (!nickname.trim()) return;
@@ -64,40 +85,55 @@ export default function PaymentPage() {
         {/* QR Code Area */}
         <div className="p-6">
           {isMobile ? (
+            /* 手机端：点击直接跳转支付宝 */
             <div className="text-center">
-              <p className="text-sm text-text-secondary mb-4 font-medium">
-                📱 手机用户请按以下步骤操作：
+              <button
+                onClick={handleAlipayClick}
+                className="w-full block"
+              >
+                <div className="w-52 h-52 mx-auto bg-white rounded-xl border-2 border-primary/20 p-3 shadow-sm relative overflow-hidden">
+                  <img
+                    src="/images/alipay-qr.png"
+                    alt="支付宝收款码 - 点击付款"
+                    className="w-full h-full object-contain"
+                  />
+                  {/* 点击遮罩提示 */}
+                  <div className="absolute inset-0 bg-primary/0 hover:bg-primary/10 flex items-center justify-center transition-all rounded-xl">
+                    <div className="opacity-0 hover:opacity-100 transition-opacity bg-white/90 rounded-lg px-3 py-2 shadow-md">
+                      <p className="text-xs font-bold text-primary">点击付款 →</p>
+                    </div>
+                  </div>
+                </div>
+              </button>
+
+              {/* 支付宝跳转按钮 */}
+              <button
+                onClick={handleAlipayClick}
+                className="w-full mt-4 py-3 rounded-lg bg-[#1677FF] text-white font-bold text-base hover:bg-[#0e5fd8] transition-colors shadow-md flex items-center justify-center gap-2"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93C7.05 19.44 4 16.08 4 12c0-.61.08-1.21.21-1.78L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-1.81-1.32-3.47-2.91-4.39-.49-.27-1.04-.42-1.6-.42-.56 0-1.11.15-1.6.42-.42.24-.88.38-1.35.38-.47 0-.93-.14-1.35-.38-.49-.27-1.04-.42-1.6-.42-.56 0-1.11.15-1.6.42-.42.24-.88.38-1.35.38-.47 0-.93-.14-1.35-.38-.49-.27-1.04-.42-1.6-.42v2c.56 0 1.11.15 1.6.42.42.24.88.38 1.35.38.47 0 .93-.14 1.35-.38.49-.27 1.04-.42 1.6-.42.56 0 1.11.15 1.6.42.42.24.88.38 1.35.38.47 0 .93-.14 1.35-.38.49-.27 1.04-.42 1.6-.42v-2c-.56 0-1.11.15-1.6.42-.42.24-.88.38-1.35.38-.47 0-.93-.14-1.35-.38-.49-.27-1.04-.42-1.6-.42z" />
+                </svg>
+                点击打开支付宝付款
+              </button>
+              <p className="text-xs text-text-muted mt-2">
+                点击后将自动打开支付宝，确认付款金额为 ¥9.9
               </p>
-              <div className="bg-blue-50 rounded-lg p-3 mb-4 text-left">
-                <ol className="space-y-2 text-xs text-text-secondary">
-                  <li className="flex gap-2">
-                    <span className="font-bold text-primary flex-shrink-0">1.</span>
-                    <span>长按下方二维码图片，保存到手机相册</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="font-bold text-primary flex-shrink-0">2.</span>
-                    <span>打开支付宝App，点击"扫一扫"</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="font-bold text-primary flex-shrink-0">3.</span>
-                    <span>点击右上角"相册"，选择刚保存的二维码</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="font-bold text-primary flex-shrink-0">4.</span>
-                    <span>确认付款金额为 <strong className="text-accent">¥9.9</strong></span>
-                  </li>
-                </ol>
+
+              {/* 备用：长按识别 */}
+              <div className="mt-4 pt-4 border-t border-border">
+                <p className="text-xs text-text-muted mb-2">无法跳转？可长按下方二维码保存后扫码：</p>
+                <div className="w-32 h-32 mx-auto bg-white rounded-lg border border-border p-2">
+                  <img
+                    src="/images/alipay-qr.png"
+                    alt="支付宝收款码 - 长按保存"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
               </div>
-              <div className="w-52 h-52 mx-auto bg-white rounded-xl border-2 border-primary/20 p-3 shadow-sm">
-                <img
-                  src="/images/alipay-qr.png"
-                  alt="支付宝收款码 - 长按保存"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <p className="text-xs text-text-muted mt-2">↑ 长按二维码保存图片</p>
             </div>
           ) : (
+            /* 电脑端：显示二维码扫码 */
             <div className="text-center">
               <p className="text-sm text-text-secondary mb-4 font-medium">
                 📲 请用手机支付宝扫描下方二维码
