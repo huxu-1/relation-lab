@@ -111,7 +111,7 @@ export default function AboutPage() {
             <p className="font-medium text-text mb-1">测评结果准吗？</p>
             <p className="text-sm text-text-secondary leading-relaxed">
               我们的测评基于经过学术验证的心理学理论模型。结果的准确性取决于你作答时的诚实程度——
-              请根据真实感受选择，而非你"希望"的自己。
+              请根据真实感受选择，而非你“希望”的自己。
             </p>
           </div>
           <div>

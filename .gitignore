@@ -36,6 +36,22 @@ yarn-error.log*
 # vercel
 .vercel
 
+# local-wubi-app (separate project)
+/local-wubi-app/
+
+# zip files
+*.zip
+
+# wubi game files
+/app/game/
+/components/Wubi*
+/data/wubi/
+/play-wubi.cmd
+/public/sounds/
+/vitest.*
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel

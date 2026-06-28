@@ -13,13 +13,7 @@ export default function Home() {
       '@type': 'Offer',
       price: '0',
       priceCurrency: 'CNY',
-      description: '免费基础结果',
-    },
-    additionalOffer: {
-      '@type': 'Offer',
-      price: '9.9',
-      priceCurrency: 'CNY',
-      description: '完整深度报告',
+      description: '免费完整深度报告',
     },
   };
 
@@ -43,7 +37,7 @@ export default function Home() {
             <svg className="w-4 h-4 text-accent" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586L7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
             </svg>
-            免费基础结果
+            免费完整报告
           </span>
           <span className="inline-flex items-center gap-1">
             <svg className="w-4 h-4 text-accent" fill="currentColor" viewBox="0 0 20 20">
@@ -98,7 +92,7 @@ export default function Home() {
               </svg>
             </div>
             <h3 className="font-bold text-primary mb-1">即时结果反馈</h3>
-            <p className="text-sm text-text-muted">完成测评后立即获取结果，基础报告完全免费</p>
+            <p className="text-sm text-text-muted">完成测评后立即获取完整深度报告，全部免费</p>
           </div>
         </div>
       </section>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Assessment, AssessmentResult } from '@/lib/types';
+import { Assessment } from '@/lib/types';
 import { computeResult } from '@/lib/scoring';
 
 export default function QuizClient({ assessment }: { assessment: Assessment }) {

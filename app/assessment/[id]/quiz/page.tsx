@@ -1,4 +1,5 @@
 ﻿import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import { getAssessmentById } from '@/data/assessments';
 import QuizClient from '@/components/QuizClient';
 
@@ -25,7 +26,7 @@ export default async function QuizPage({
     return (
       <div className="max-w-2xl mx-auto px-4 py-8 text-center">
         <p className="text-text-secondary">该测评内容正在筹备中，敬请期待！</p>
-        <a href="/" className="text-accent hover:underline mt-4 inline-block">返回首页</a>
+        <Link href="/" className="text-accent hover:underline mt-4 inline-block">返回首页</Link>
       </div>
     );
   }

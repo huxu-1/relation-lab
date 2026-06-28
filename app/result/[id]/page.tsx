@@ -1,52 +1,30 @@
 ﻿'use client';
 
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { AssessmentResult } from '@/lib/types';
 import Link from 'next/link';
-import FeedbackForm from '@/components/FeedbackForm';
-
-function verifyUnlockCode(resultKey: string, unlockCode: string): boolean {
-  // Client-side verification - mirrors server-side logic
-  const salt = 'relation-lab-salt';
-  const expected = sha256Short(resultKey + salt);
-  return unlockCode === expected;
-}
-
-function sha256Short(input: string): string {
-  // Simplified client-side hash - full verification on server
-  let hash = 0;
-  for (let i = 0; i < input.length; i++) {
-    const char = input.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash |= 0;
-  }
-  return Math.abs(hash).toString(16).padStart(16, '0').substring(0, 16);
-}
+import BookRecommendation from '@/components/BookRecommendation';
+import WeChatConsultation from '@/components/WeChatConsultation';
+import ShareCard from '@/components/ShareCard';
+import { getBooksForAssessment, getSharePhrase } from '@/data/books';
+import { getAssessmentById } from '@/data/assessments';
 
 export default function ResultPage() {
   const searchParams = useSearchParams();
-  const [result, setResult] = useState<AssessmentResult | null>(null);
-  const [error, setError] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  const key = searchParams.get('key');
 
-  useEffect(() => {
-    const key = searchParams.get('key');
-    const unlock = searchParams.get('unlock');
-    const preview = searchParams.get('preview');
-    if (!key) { setError(true); return; }
+  const result = useMemo<AssessmentResult | null>(() => {
+    if (typeof window === 'undefined' || !key) return null;
     try {
       const data = localStorage.getItem(key);
-      if (!data) { setError(true); return; }
-      setResult(JSON.parse(data));
-      // Owner preview mode - temporarily unlock for viewing
-      if (preview === 'owner2026') {
-        setIsUnlocked(true);
-      } else if (unlock && verifyUnlockCode(key, unlock)) {
-        setIsUnlocked(true);
-      }
-    } catch { setError(true); }
-  }, [searchParams]);
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
+    }
+  }, [key]);
+
+  const error = !key || !result;
 
   if (error) {
     return (
@@ -57,23 +35,18 @@ export default function ResultPage() {
     );
   }
 
-  if (!result) return <div className="max-w-2xl mx-auto px-4 py-12 text-center"><p className="text-text-muted">正在加载...</p></div>;
+  if (!result) {
+    return <div className="max-w-2xl mx-auto px-4 py-12 text-center"><p className="text-text-muted">正在加载...</p></div>;
+  }
 
   const maxScore = Math.max(...result.freeResult.dimensionBreakdown.map(d => d.score));
-
-  const isPreview = searchParams.get('preview') === 'owner2026';
+  const assessmentMeta = getAssessmentById(result.assessmentId);
+  const books = getBooksForAssessment(result.assessmentId);
+  const sharePhrase = getSharePhrase(result.assessmentId);
+  const siteUrl = 'https://www.guanxiyanjiusuo.cn';
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      {/* Owner Preview Banner */}
-      {isPreview && (
-        <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-3 mb-6 text-center">
-          <p className="text-sm text-yellow-800 font-medium">
-            🔧 预览模式 - 你正在查看完整付费报告，普通用户需付费后才能看到
-          </p>
-        </div>
-      )}
-
       {/* Result Header */}
       <div className="text-center mb-8">
         <p className="text-sm text-text-muted mb-2">你的测评结果</p>
@@ -81,7 +54,7 @@ export default function ResultPage() {
           {result.freeResult.profileName}
         </h1>
         <p className="text-text-secondary leading-relaxed max-w-lg mx-auto">
-          {isUnlocked ? result.paidResult.profileDescription : result.freeResult.profileBrief}
+          {result.paidResult.profileDescription}
         </p>
       </div>
 
@@ -103,77 +76,83 @@ export default function ResultPage() {
         </div>
       </div>
 
-      {isUnlocked ? (
-        /* Full Paid Report */
-        <div className="space-y-6">
-          <div className="bg-white rounded-xl border border-border p-6">
-            <h2 className="font-bold text-primary mb-3">行为特征</h2>
-            <ul className="space-y-2">
-              {result.paidResult.traits.map((t, i) => (
-                <li key={i} className="flex items-start gap-2 text-text-secondary">
-                  <span className="w-5 h-5 rounded-full bg-accent/20 text-accent text-xs flex items-center justify-center font-bold flex-shrink-0">{i + 1}</span>
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="bg-white rounded-xl border border-border p-6">
-            <h2 className="font-bold text-primary mb-3">改善建议</h2>
-            <ul className="space-y-2">
-              {result.paidResult.suggestions.map((s, i) => (
-                <li key={i} className="flex items-start gap-2 text-text-secondary">
-                  <span className="w-5 h-5 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">{i + 1}</span>
-                  {s}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {result.paidResult.compatibilityNotes.length > 0 && (
-            <div className="bg-white rounded-xl border border-border p-6">
-              <h2 className="font-bold text-primary mb-3">兼容性说明</h2>
-              <div className="space-y-3">
-                {result.paidResult.compatibilityNotes.map((note, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <span className={`px-2 py-1 rounded text-xs font-bold ${note.level === 'high' ? 'bg-green-100 text-green-700' : note.level === 'medium' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
-                      {note.level === 'high' ? '高度兼容' : note.level === 'medium' ? '中等兼容' : '低度兼容'}
-                    </span>
-                    <span className="text-sm text-text-secondary">{note.description}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {result.paidResult.detailedSections.map((section, i) => (
-            <div key={i} className="bg-white rounded-xl border border-border p-6">
-              <h2 className="font-bold text-primary mb-3">{section.title}</h2>
-              <p className="text-text-secondary leading-relaxed">{section.content}</p>
-            </div>
-          ))}
+      {/* Full Report - 免费展示 */}
+      <div className="space-y-6">
+        {/* 行为特征 */}
+        <div className="bg-white rounded-xl border border-border p-6">
+          <h2 className="font-bold text-primary mb-3">行为特征</h2>
+          <ul className="space-y-2">
+            {result.paidResult.traits.map((t, i) => (
+              <li key={i} className="flex items-start gap-2 text-text-secondary">
+                <span className="w-5 h-5 rounded-full bg-accent/20 text-accent text-xs flex items-center justify-center font-bold flex-shrink-0">{i + 1}</span>
+                {t}
+              </li>
+            ))}
+          </ul>
         </div>
-      ) : (
-        /* Free result - CTA for paid */
-        <div className="bg-primary/5 rounded-xl border-2 border-accent/30 p-6 mb-6">
-          <h2 className="font-bold text-primary mb-2">解锁完整报告</h2>
-          <p className="text-text-secondary text-sm leading-relaxed mb-4">
-            基础结果只揭示了你的类型，完整报告包含：深度性格分析、行为特征清单、改善建议、兼容性说明等7个章节。
-          </p>
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-2xl font-bold text-accent">¥9.9</span>
-              <span className="text-sm text-text-muted ml-2">完整报告</span>
-            </div>
-            <Link href={`/payment/${result.assessmentId}?key=${searchParams.get('key')}`} className="px-6 py-3 rounded-lg bg-accent text-white font-bold hover:bg-primary transition-colors shadow-md">
-              立即解锁
-            </Link>
-          </div>
-        </div>
-      )}
 
-      {/* Feedback Section */}
-      <FeedbackForm assessmentId={result.assessmentId} />
+        {/* 改善建议 */}
+        <div className="bg-white rounded-xl border border-border p-6">
+          <h2 className="font-bold text-primary mb-3">改善建议</h2>
+          <ul className="space-y-2">
+            {result.paidResult.suggestions.map((s, i) => (
+              <li key={i} className="flex items-start gap-2 text-text-secondary">
+                <span className="w-5 h-5 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">{i + 1}</span>
+                {s}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* 兼容性说明 */}
+        {result.paidResult.compatibilityNotes.length > 0 && (
+          <div className="bg-white rounded-xl border border-border p-6">
+            <h2 className="font-bold text-primary mb-3">兼容性说明</h2>
+            <div className="space-y-3">
+              {result.paidResult.compatibilityNotes.map((note, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <span className={`px-2 py-1 rounded text-xs font-bold ${note.level === 'high' ? 'bg-green-100 text-green-700' : note.level === 'medium' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
+                    {note.level === 'high' ? '高度兼容' : note.level === 'medium' ? '中等兼容' : '低度兼容'}
+                  </span>
+                  <span className="text-sm text-text-secondary">{note.description}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 详细章节 */}
+        {result.paidResult.detailedSections.map((section, i) => (
+          <div key={i} className="bg-white rounded-xl border border-border p-6">
+            <h2 className="font-bold text-primary mb-3">{section.title}</h2>
+            <p className="text-text-secondary leading-relaxed">{section.content}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* 分隔线 */}
+      <div className="border-t border-border my-8"></div>
+
+      {/* 推荐书籍 */}
+      <BookRecommendation books={books} />
+
+      {/* 微信咨询 */}
+      <WeChatConsultation />
+
+      {/* 分享卡片 */}
+      <ShareCard
+        assessmentTitle={assessmentMeta?.title || '情感关系测评'}
+        profileName={result.freeResult.profileName}
+        sharePhrase={sharePhrase}
+        siteUrl={siteUrl}
+      />
+
+      {/* 返回首页 */}
+      <div className="text-center mt-8 pb-4">
+        <Link href="/" className="text-accent hover:underline text-sm">
+          ← 返回全部测评
+        </Link>
+      </div>
     </div>
   );
 }

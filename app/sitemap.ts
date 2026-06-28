@@ -2,7 +2,7 @@
 import { assessments } from '@/data/assessments';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://relation-lab.vercel.app';
+  const baseUrl = 'https://www.guanxiyanjiusuo.cn';
 
   const assessmentPages = assessments.map(a => ({
     url: `${baseUrl}/assessment/${a.id}`,

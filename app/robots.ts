@@ -5,8 +5,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin/', '/payment/', '/result/'],
+      disallow: ['/result/'],
     },
-    sitemap: 'https://relation-lab.vercel.app/sitemap.xml',
+    sitemap: 'https://www.guanxiyanjiusuo.cn/sitemap.xml',
   };
 }
