@@ -23,9 +23,9 @@ export default function ConsultationPage() {
       price: '¥200/小时'
     },
     {
-      id: 'personal',
-      title: '个人成长咨询',
-      description: '自我认知、情绪管理、职业规划等',
+      id: 'interpersonal',
+      title: '人际关系咨询',
+      description: '职场关系、社交焦虑、人际沟通等',
       icon: '',
       price: '¥150/小时'
     }
@@ -92,7 +92,7 @@ export default function ConsultationPage() {
                 <Phone className="w-8 h-8 text-pink-600" />
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">电话咨询</h4>
-              <p className="text-gray-600">138-xxxx-xxxx</p>
+              <p className="text-gray-600">13635817214</p>
               <p className="text-sm text-gray-500 mt-1">工作日 9:00-18:00</p>
             </div>
 
@@ -101,7 +101,7 @@ export default function ConsultationPage() {
                 <MessageCircle className="w-8 h-8 text-purple-600" />
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">微信咨询</h4>
-              <p className="text-gray-600">扫描二维码添加</p>
+              <p className="text-gray-600">13635817214</p>
               <p className="text-sm text-gray-500 mt-1">随时留言回复</p>
             </div>
 
@@ -110,7 +110,7 @@ export default function ConsultationPage() {
                 <Mail className="w-8 h-8 text-blue-600" />
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">邮件咨询</h4>
-              <p className="text-gray-600">contact@example.com</p>
+              <p className="text-gray-600">553738490@qq.com</p>
               <p className="text-sm text-gray-500 mt-1">24小时内回复</p>
             </div>
           </div>
