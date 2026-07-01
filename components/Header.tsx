@@ -21,6 +21,9 @@ export default function Header() {
           <Link href="/" className="hover:text-primary transition-colors font-medium">
             全部测评
           </Link>
+          <Link href="/consultation" className="hover:text-primary transition-colors font-medium">
+            心理咨询
+          </Link>
           <Link href="/about" className="hover:text-primary transition-colors">
             关于我们
           </Link>

@@ -1,8 +1,10 @@
-﻿export default function Footer() {
+﻿import Link from 'next/link';
+
+export default function Footer() {
   return (
     <footer className="bg-primary-dark text-white/80 py-8 mt-auto">
       <div className="max-w-5xl mx-auto px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 text-sm">
           <div>
             <h3 className="text-white font-bold mb-2">关系研究所</h3>
             <p className="text-white/60 leading-relaxed">
@@ -15,6 +17,19 @@
               <li>Bartholomew依恋模型</li>
               <li>Chapman爱的语言理论</li>
               <li>关系动力学研究</li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-white font-bold mb-2">咨询服务</h3>
+            <ul className="text-white/60 space-y-1">
+              <li>
+                <Link href="/consultation" className="hover:text-white transition-colors">
+                  一对一心理咨询
+                </Link>
+              </li>
+              <li>情感关系咨询</li>
+              <li>家庭关系咨询</li>
+              <li>人际关系咨询</li>
             </ul>
           </div>
           <div>
