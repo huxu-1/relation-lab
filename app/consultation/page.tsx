@@ -25,7 +25,7 @@ export default function ConsultationPage() {
     {
       id: 'interpersonal',
       title: '人际关系咨询',
-      description: '职场关系、社交焦虑、人际沟通等',
+      description: '职场关系、人际沟通等',
       icon: '',
       price: '¥150/小时'
     }
@@ -115,12 +115,14 @@ export default function ConsultationPage() {
             </div>
           </div>
 
-          {/* WeChat QR Code Placeholder */}
+          {/* WeChat QR Code */}
           <div className="mt-8 text-center">
             <div className="inline-block bg-gray-100 rounded-lg p-6">
-              <div className="w-48 h-48 bg-white border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-gray-400 text-sm">微信二维码</span>
-              </div>
+              <img 
+                src="/images/wechat-qr.png" 
+                alt="微信二维码" 
+                className="w-48 h-48 mb-4 rounded-lg shadow-md"
+              />
               <p className="text-gray-600 font-medium">扫码添加咨询师微信</p>
               <p className="text-sm text-gray-500 mt-1">备注"心理咨询"优先通过</p>
             </div>
