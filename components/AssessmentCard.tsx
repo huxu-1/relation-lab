@@ -39,9 +39,8 @@ export default function AssessmentCard({ assessment }: { assessment: AssessmentM
             {assessment.category}
           </span>
         </div>
-        <div className="mt-4 flex items-center justify-between">
-          <span className="text-xs text-accent font-medium">免费获取基础结果 →</span>
-          <span className="text-xs text-text-muted">详细报告 ¥9.9</span>
+        <div className="mt-4">
+          <span className="text-xs text-accent font-medium">免费查看完整报告 →</span>
         </div>
       </div>
     </Link>

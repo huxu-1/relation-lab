@@ -1,0 +1,20 @@
+# 大文件 - 超过Vercel 100MB限制
+*.zip
+
+# local-wubi-app 独立项目
+/local-wubi-app/
+
+# wubi game 文件
+/app/game/
+/components/Wubi*
+/data/wubi/
+/play-wubi.cmd
+/public/sounds/
+/vitest.*
+
+# 测试文件
+*.test.*
+
+# 构建产物
+relation-lab-build.zip
+relation-lab-full.zip

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import html2canvas from 'html2canvas';
 import QRCode from 'qrcode';
 
 interface ShareCardProps {
@@ -44,14 +43,88 @@ export default function ShareCard({ assessmentTitle, profileName, sharePhrase, s
   };
 
   const handleSaveCard = async () => {
-    if (!cardRef.current) return;
+    if (!qrDataUrl) return;
     setSaving(true);
     try {
-      const canvas = await html2canvas(cardRef.current, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff',
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas not supported');
+
+      // 卡片尺寸
+      const W = 750;
+      const H = 1060;
+      canvas.width = W;
+      canvas.height = H;
+
+      // 背景
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, W, H);
+
+      // 头部渐变背景
+      const grad = ctx.createLinearGradient(0, 0, W, 200);
+      grad.addColorStop(0, '#2D3340');
+      grad.addColorStop(1, '#4A5568');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, 200);
+
+      // 头部文字
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      ctx.font = '24px sans-serif';
+      ctx.fillText('关系研究所', W / 2, 80);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 32px sans-serif';
+      ctx.fillText('专业情感关系测评', W / 2, 130);
+
+      // 主体内容
+      ctx.fillStyle = '#9CA3AF';
+      ctx.font = '26px sans-serif';
+      ctx.fillText(assessmentTitle, W / 2, 320);
+
+      ctx.fillStyle = '#4B5563';
+      ctx.font = '30px sans-serif';
+      ctx.fillText('你的结果是', W / 2, 400);
+
+      ctx.fillStyle = '#2D3340';
+      ctx.font = 'bold 64px sans-serif';
+      ctx.fillText(profileName.length > 8 ? profileName.slice(0, 8) : profileName, W / 2, 500);
+
+      // 分割线
+      ctx.strokeStyle = '#E5E7EB';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(100, 600);
+      ctx.lineTo(W - 100, 600);
+      ctx.stroke();
+
+      // 二维码
+      const qrImg = new Image();
+      qrImg.crossOrigin = 'anonymous';
+      const qrLoaded = new Promise<void>((resolve) => {
+        qrImg.onload = () => resolve();
+        qrImg.onerror = () => resolve();
+        qrImg.src = qrDataUrl;
       });
+      await qrLoaded;
+      const qrSize = 200;
+      ctx.drawImage(qrImg, W / 2 - qrSize - 20, 660, qrSize, qrSize);
+
+      // 二维码旁边文字
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#4B5563';
+      ctx.font = '28px sans-serif';
+      ctx.fillText('扫码来测一测', W / 2 + 20, 740);
+      ctx.fillStyle = '#9CA3AF';
+      ctx.font = '24px sans-serif';
+      ctx.fillText('guanxiyanjiusuo.cn', W / 2 + 20, 790);
+
+      // 底部水印
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#D1D5DB';
+      ctx.font = '22px sans-serif';
+      ctx.fillText('— 关系研究所 —', W / 2, H - 50);
+
+      // 下载
       const link = document.createElement('a');
       link.download = `关系研究所-${profileName}.png`;
       link.href = canvas.toDataURL('image/png');

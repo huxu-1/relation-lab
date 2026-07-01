@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import SiteFeedbackForm from '@/components/SiteFeedbackForm';
 
 export const metadata: Metadata = {
   title: '关于我们',
@@ -89,15 +90,17 @@ export default function AboutPage() {
           <li className="flex gap-3">
             <span className="w-7 h-7 rounded-full bg-primary text-white text-sm flex items-center justify-center font-bold flex-shrink-0">3</span>
             <div>
-              <p className="font-medium text-text">免费查看基础结果</p>
-              <p className="text-sm text-text-muted">立即获得你的类型画像和各维度得分</p>
+              <p className="font-medium text-text">免费查看完整报告</p>
+              <p className="text-sm text-text-muted">立即获得深度分析、行为特征、改善建议和兼容性说明</p>
             </div>
           </li>
           <li className="flex gap-3">
             <span className="w-7 h-7 rounded-full bg-accent text-white text-sm flex items-center justify-center font-bold flex-shrink-0">4</span>
             <div>
-              <p className="font-medium text-text">解锁完整报告（¥9.9）</p>
-              <p className="text-sm text-text-muted">获取深度分析、行为特征、改善建议和兼容性说明</p>
+              <p className="font-medium text-text">
+                <Link href="/books" className="text-accent hover:underline">探索延伸阅读与咨询 →</Link>
+              </p>
+              <p className="text-sm text-text-muted">查看推荐书籍，或添加微信进行一对一深度咨询</p>
             </div>
           </li>
         </ol>
@@ -115,17 +118,15 @@ export default function AboutPage() {
             </p>
           </div>
           <div>
-            <p className="font-medium text-text mb-1">为什么要付费？</p>
+            <p className="font-medium text-text mb-1">测评真的免费吗？</p>
             <p className="text-sm text-text-secondary leading-relaxed">
-              基础结果完全免费，帮助你快速了解自己的类型。完整报告包含深度分析、行为特征、
-              改善建议等内容，9.9元用于支持平台持续运营和测评内容的持续优化。
+              完全免费。完成测评后即可查看完整深度报告，包括行为特征、改善建议、兼容性说明等全部内容，没有任何付费门槛。
             </p>
           </div>
           <div>
             <p className="font-medium text-text mb-1">我的数据安全吗？</p>
             <p className="text-sm text-text-secondary leading-relaxed">
-              测评结果仅存储在你的浏览器本地，我们不会收集你的个人信息。
-              付费确认仅使用昵称识别，不涉及任何敏感信息。
+              测评结果仅存储在你的浏览器本地，我们不会收集你的个人信息。网站无需注册登录，保护你的隐私。
             </p>
           </div>
         </div>
@@ -139,6 +140,15 @@ export default function AboutPage() {
           如你有严重的情感困扰或心理问题，请寻求专业心理咨询师或医疗机构帮助。
           测评结果不应对你的人际关系决策产生决定性影响。
         </p>
+      </section>
+
+      {/* Feedback Section */}
+      <section className="mb-8">
+        <div className="text-center mb-5">
+          <h2 className="text-xl font-bold text-primary mb-2">反馈与建议</h2>
+          <p className="text-sm text-text-muted">你的意见对我们很重要，帮助我们持续改进</p>
+        </div>
+        <SiteFeedbackForm />
       </section>
 
       {/* CTA */}
